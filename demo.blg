@@ -1,9 +1,9 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: demo.aux
 The style file: abbrv.bst
-I couldn't open database file 1Technorati.bib
----line 9 of file demo.aux
- : \bibdata{1Technorati
- :                     , http://technorati.com/}
+I couldn't open database file .bib
+---line 10 of file demo.aux
+ : \bibdata{
+ :          }
 I'm skipping whatever remains of this command
 I found no \citation commands---while reading file demo.aux
 I found no database files---while reading file demo.aux

@@ -3,7 +3,9 @@
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{url}
+\usepackage{cite}
 \usepackage{booktabs}
+\usepackage{graphicx}
 \setlength{\heavyrulewidth}{1.2pt}
 \setlength{\lightrulewidth}{0.7pt}
 
@@ -44,6 +46,7 @@ Mária Bieliková\\
 \maketitle
 
 \begin{abstract}
+	
 It has been shown that search personalization can greatly
 benefit from exploiting user’s short-term context – user’s
 immediate need and intent. However, this requires that the
@@ -376,9 +379,71 @@ gain detailed insight into implicit feedback on every accessed
 page. Some level of implicit feedback can be inferred by
 analyzing timestamps and patterns in query logs [26].
 
+\includegraphics{img-1.jpg}
+
+\subsection{Implicit feedback collection}
+
+We use the proxy server to inject a tracking JavaScript into
+each page, which collects the following implicit feedback signals:
+
+\begin{itemize} 
+	\item \textit{real time spent on page} – the actual time spent on page
+	is measured in series of short time windows. If there
+	is an observed activity within the page (i.e., mouse
+	movement, scrolling, clicking, writing) during the span
+	of the window, the length of the window is added to the
+	total time on page. In this case, we used the window
+	of 4 seconds;
+	\item number of clicks, scrolls and copying into clipboard;
+\end{itemize}
+
+\subsection{Metadata collection}
+
+Besides the implicit feedback collection, we use PeWeProxy
+to create logs of user activity, i.e., we track the documents
+that the user visited and to associate each log with its corresponding
+implicit feedback signals.
+
+Each document is processed and following types of metadata
+are extracted:
+
+\begin{itemize} 
+	\item \textit{keywords} – we extract keywords automatically by using
+	the tagthe.net and Alchemy Orchestr8 Web services
+	and JATR library;
+	\item \textit{tags} – we use human created directory of tags, the Web
+		service delicious.com;
+	\item \textit{named entities} extracted by using \textit{OpenCalais} Web
+		service;
+	\item \textit{categories} from the human-maintained project ODP
+\end{itemize}
+
+All metadata is extracted by using a wrapper Web service
+Metall3
+, which strips the document from auxiliary content
+(ads, menus, header, footer, etc.), leaving only the main text
+of the document, which is translated into English and the
+described services are used to extract metadata. We translate
+the documents into English, as the available extraction
+services work best with English text. The automatic translation
+is far from perfect, but the basic informational structure
+of the text is retained and as our previous experiments show,
+the quality of metadata extracted from translated texts is
+satisfactory [2].
+
+
+
+
+
+
+\begin{itemize} 
+	\item
+	\item
+\end{itemize}
+
 
 \bibliographystyle{abbrv}
-\bibliography{1Technorati, http://technorati.com/}
+\bibliography{}
 
 \balancecolumns
 
