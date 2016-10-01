@@ -182,6 +182,201 @@ In Section 3 we describe our data collection methodology.
 Section 4 describes the proposed method for search
 sessions segmentation. Experimental results are described
 in Section 6.
+
+\section{RELATED WORK}
+
+The most widely used approach to search session segmentation
+is to compare temporal distance of the queries. If two
+queries were issued with a time difference larger than a predefined
+threshold, it is assumed that a new session started,
+and the existing session is split at that place. This technique
+was first described in [4], establishing the threshold
+of 25.5 minutes. They measured an average time between
+page requests (9.5 minutes) and added a 1.5 standard deviation.
+This approach only makes sense for normal distribution,
+while surfing on the Web shows properties of a long-tail
+distribution. The established 25.5 minutes are part of the
+long-tail distribution and it wouldn’t make much difference
+if 20, or 40 minutes were used instead [14]. He et al. [13] experimented
+with various cutoff settings and established that
+the optimal cutoff time is between 10 and 15 minutes. Due
+to its simplicity both in concept and implementation, this
+technique is widely used and there are modification ranging
+from use of 5 minutes cutoff [8], through 30 minutes cutoff
+[24] to a per-user cutoff [23].
+
+\begin{itemize}  
+	\item it is unable to detect sessions which are split within
+	a short time – if the search intent changes quickly,
+	without sufficient time passing between consecutive
+	queries, the queries are falsely considered as part of
+	a single session, yet they might bear a different underlying
+	intent;
+	\item the long time between searches may not mean that the
+	user’s intent changed – this is a well known downside
+	of any time-window based method. The longer pause
+	between queries may be caused by several factors, such
+	as reading long article, breaks, or any other interruptions
+	that are commonly encountered nowadays [5].
+\end{itemize}
+
+Another approach uses lexical distance of the queries. This
+idea compares content of two queries to detect if the intent
+has changed. Example of this approach is stated in [16].
+The main drawback of this method is that it leads to a high
+amount of false positives. There are many instances where
+two queries are completely dissimilar (they share no common
+words), yet their underlying intent is the same. Consider
+a user searching for “IR” and “information retrieval”
+afterwards. Using the lexical distance approach would incorrectly
+yield two separate sessions.
+
+Method described in [11] combines both temporal and lexical
+distances. They use vector-space representation, where each
+pair of following queries is placed in the space. If the query
+pair fits into the space bounded by the subplane delimited
+by two edge cases
+
+\begin{itemize} 
+	\item two parallel, but dissimilar queries,
+	\item the same queries, but executed long time apart
+\end{itemize}
+
+it is considered an extension of the current session. Although
+this combination can achieve better results than each of the
+methods alone, it is still prone to the aforementioned problems.
+
+As stated, related queries do not provide sufficient data to
+match similar intents, but there are approaches that use
+signals from the retrieved documents. In [25], authors used
+vectors of titles and snippets of 50 top-ranked documents
+for the query. The session is split as determined by comparing
+cosine similarities of two following queries. Another
+approach uses document keywords. In [6], authors extract
+document’s keywords using the TF.IDF scheme and map
+them to ODP categories. The session is then split when the
+ODP category changes. This approach however fails to account
+for user’s real interests. When the user enters a query
+and clicks and views some documents only to realize that the
+results are wrong and the query needs to be reformulated,
+this approach has already used these faulty results to decide
+upon session segmentation.
+
+Jones and Klinker [18] trained a binary classifier to detect
+whether two queries are part of the same search task or not,
+using a set of syntactic, temporal, query log and web search
+features. They have obtained best results by incorporating
+a vector derived from the first 50 results for the given query,
+but this approach again suffers from the query ambiguity.
+
+Currently, the arguably best approach is grouping related
+queries into sessions by using a clustering methods. The
+key feature of the approach is wikification of the queries,
+i.e., building a relevance vector in a high dimensional concept
+space of Wikipedia articles [22]. The relevance vector
+describes relevance of the query terms for each Wikipedia
+article. Although this approach gives good result on the
+manually annotated set of circa 1300 queries, it is strongly
+dependent on the Wikipedia articles. Given a query which
+does not contain a term present on Wikipedia, this approach
+does not yield any benefit over other methods. Our method
+is not dependent on other external and limited knowledge
+base, instead, it depends only on clicked search results which
+follow naturally after every search.
+
+Most of the existing approaches also do not deal with multitasking.
+Multitasking might be present in several forms,
+mainly:
+
+\begin{itemize} 
+	\item parallel browsing, when a user is having multiple goals
+	at the same time and working on them at the same
+	time by means of having multiple browsers, or multiple
+	browser tabs, or
+	\item browsing with interruptions, when a user is having a
+	single goal but is interrupted, switches the goal for a
+	while and returns back to the original goal afterwards.
+	The interruption may not be forced, it may be the
+	user’s conscious decision to abandon the current task
+	and concentrate on different goal.
+\end{itemize}
+
+The practical effect of multitasking on search session segmentation
+is that it is causing the sessions to be disconnected.
+Single search session is interrupted by queries that
+are part of another session and then the session continues,
+as the user returns to the original goal.
+
+There are mixed reports on the presence of multitasking on
+the Web. According to [15] only 25% of users multitask.
+When searching, the multitasking is practically nonexistent
+for navigational and transactional queries [28], it is only
+present in 6-15% of ambiguous queries. Older study [3] reports
+that only 1% of all sessions are diconnected. Lucchese
+et al. analyzed AOL query log and report that multitasking
+in search exists [22].
+
+In [3] a method to detect disconnected sessions is proposed.
+Their approach is executed in two steps: in the first phase,
+sessions are segmented using a cutoff time, in the second
+step, all queries in each session are compared to build a similarity
+graph where the transitive closure is computed. All
+queries connected by the closure are considered part of the
+same session. This approach again combines the disadvantages
+of the approaches it merges – temporal and lexical
+distance. In [22] the queries are connected using clustering
+methods, so the multitasked queries are connected naturally.
+
+Our work extends and differs from existing research in several
+important ways
+
+
+\begin{itemize} 
+	\item First, we only consider the documents that the user
+	deemed useful. To measure the usefulness, we partially
+	rely only on the clickthrough data and only consider
+	the search results that the user actually viewed, but
+	we also use implicit feedback indicators to weight the
+	contribution of each of the documents.
+	\item The search sessions are segmented by comparing their
+	metadata (both machine and human extracted), and
+	to increase the chance of a successful match, we extend
+	the metadata with ConceptNet relations.
+	\item Our approach also considers multitasking and user interruptions
+	– we maintain a stack of short contexts
+	(search sessions) and when the query fits within a previously
+	abandoned session, this session can be popped
+	from the stack and continued.
+\end{itemize}
+
+\section{DATA COLLECTION}
+
+Our work is based on the idea of considering only the documents
+that the user found useful, therefore we need a way
+to collect user’s actions on search engine and implicit feedback
+on viewed documents [10]. In order to gain detailed
+insight into users actions and to collect precise and rich implicit
+feedback data, we leverage a personalized proxy server,
+called PeWe Proxy. The collection process is described in
+more detail in Fig. 1.
+
+The personalized proxy server2
+acts as a regular proxy, sitting
+between the user and the Web [20]. All user’s requests
+are handled by the proxy first and then forwarded to the
+target server. Similarly, the response from Web server has
+to pass through the proxy. This means that the proxy has
+access to complete message processing between client and
+the server and can even modify the actual content of the
+request/response.
+
+We are aware, that using proxy server in a production search
+engine is not a realistic option. We are using proxy server to
+gain detailed insight into implicit feedback on every accessed
+page. Some level of implicit feedback can be inferred by
+analyzing timestamps and patterns in query logs [26].
+
+
 \bibliographystyle{abbrv}
 \bibliography{1Technorati, http://technorati.com/}
 
