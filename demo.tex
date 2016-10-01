@@ -429,19 +429,460 @@ of the text is retained and as our previous experiments show,
 the quality of metadata extracted from translated texts is
 satisfactory [2].
 
+\section{SEGMENTING SEARCH SESSIONS}
+
+Our method of search session segmentation operates in the
+following steps:
+
+\begin{enumerate} 
+	\item building candidate search results for the intent model
+	of the query
+	\item pruning the candidates by the implicit feedback indicators
+	\item using the intent models to match the queries to discover
+	sessions
+\end{enumerate}
+
+\subsection{Building the intent model of the query}
+
+For each query, we find the candidate set of useful documents.
+These are the documents that were clicked from the
+search engine results page. We use the value of referrer
+HTTP header – each Web page that was followed from the
+search engine results page would have the results page URL
+address as referrer.
+
+The basic assumption behind this filtering is that users only
+click at the results that help them fullfil their search goal (intent)
+and extracting features only from these documents, as
+opposed to extracting features from all documents retrieved
+for the query will result in having a more accurate intent
+model.
+
+However, the pruned set of documents only represents the
+candidates, as they
+
+\subsection{Pruning by implicit feedback indicators}
+
+To further prune the documents that were viewed in response
+to the search query, we consider the implicit feedback
+indicators. This helps us to remove search hits that
+were clicked, but did not really contribute to the fullfilment
+of the underlying intent. A typical example is an ambiguous
+query (e.g. jaguar), which yields documents that cover
+wide range of topics. The user, biased by the search engine
+ranking [19], may click the search result dealing with wrong
+topic. Similarly, a user willing to buy a car might formulate
+a vague query including model of a car and hit a wide variety
+of search results dealing with reviews, descriptions or
+car shops offerings.
+
+Again, we make the basic assumption that upon visiting a
+page which does not conform to the underlying search intent,
+the user expresses lower level of interest. We estimate the
+level of interest via the level of interaction which is captured
+in form of the various implicit feedback indicators. The particular
+indicators are aggregated and final value of implicit
+feedback (X ) is calculated as
+
+w = \frac{time on page + click cnt + copy cnt + select cnt}{content length}
+
+which is then normalized as
+
+X = 1 - \frac{1}{1 + w}
+
+We arbitrarily weight the indicators equally. Figure 2 shows
+the distribution of X calculated for all search results accessed
+via the proxy over the period of one year. This distribution
+exhibits the long tail property, with the majority
+of Web pages with the value of 0 < X > 0.1.
+
+We prune all accesses with the value of X < Xmin.
+
+\subsection{ Matching the sessions}
+
+Each query q is associated with a set of relevant documents
+Q = {Dq,1, Dq,2, . . . , Dq,n} that were clicked in response to
+the query and passed the implicit feedback filters. Each
+search result (document) for query q is modeled as a set of
+metadata Dq,i = {m1, m2, . . . , mm}.
+The intent model of the query q is calculated by unioning
+all document models as follows:
+
+If there is a query which has no document views associated
+with it (either there was no click on the search engine results
+page, or all clicks were pruned by the implicit feedback level
+restriction window) then its intent model is represented as
+an empty set.
+After the final step, each query has associated a set of metadata
+which describes the search results that the user found
+interesting. We also build a second set of enhanced metadata
+for each query by querying the ConceptNet [12] API
+for related terms for each term in the original intent model.
+
+The log segmentation then proceeds as follows:
 
 
+\begin{enumerate} 
+	\item The queries are ordered by the date they were issued
+	\item The session stack T, which is used to store recent sessions
+	is initialized to empty stack
+	\item  Starting with oldest query, the log is processed
+	\item  The stack T is traversed top-down, starting with the
+	most recent session and each session Sc is examined
+	\item  The intent model of the query q is compared with the
+	session model Sc. If there is a significant match between
+	the metadata terms in session model and query
+	intent model, i.e.
+	kSc ∩ Iqk > simmin
+	then the query q is considered part of the session Sc.
+	The intent model of the query is merged into the session
+	model:
+	 Sc = Sc ∪ Iq.  
+	The session Sc is removed
+	from the stack and added at the top, as the most recent
+	session. The processing continues with next query
+	at step 3.
+	\item When all sessions from the stack were examined and
+	none was matched by the current query q, the query is
+	considered the beginning of a new session. New session
+	Sc is created as Sc = Iq and added on top of the session
+	stack T. Processing of the log continues at step 3.
+\end{enumerate}
 
+Maintaining the session stack T is the key part, that allows
+the method to consider multitasking and interruptions.
+When the user changes context but then returns back to the
+original context, we are able to link the following actions to
+the original context. For practical reasons and to prevent
+the queries to rejoin old sessions, the stack only accepts sessions
+that are not older than Told. The age of the session
+is calculated as the time when the oldest query from that
+session was issued.
 
+\section{EVALUATION}
+
+To evaluate our approach to search session segmentations,
+we used a log of searches collected on the proxy platform
+over the period of 4 days. We analyzed all search requests to
+Google search engine, and automatically filtered all queries
+that were automatically issued by the browser to autocomplete
+the search, when the user is typing the query or location
+into the address bar. The final filtered query log contains
+245 queries from 3 different users. To obtain a baseline
+to compare against, these queries were manually segmented
+into search sessions by a human evaluator. To remove a
+possible time bias, the segmentation user interface did not
+contain information about the time of query – only the text
+of the query itself.
+
+The main problem of evaluating session segmentation is that
+it is often hard, even for human evaluators, to detect the
+similarities and intents behind the queries. When searching,
+users describe the problem domain with short keywords, so
+often a thorough knowledge of the problem domain is required,
+to decide what is similar and what not. Table 1
+shows some examples from the analyzed query log. This implicates
+that even the manually segmented sessions may be
+incorrect.
+
+For the experiment setup, we initialized the parameters as
+shown in Table 2.
+
+Table 3 summarizes the results obtained with various segmentation
+methods. Approach in the table refers to the specific
+method that was used to segment the logs. In lexical
+approach, we used query similarities – two following queries
+sharing at least one common keyword were considered to be
+part of the same session. Temporal approach refers to time
+based similarity. The number in the name indicates the size
+of the cutoff window used. Temporal30m means that queries
+were segmented by using a 30 minutes inactivity cutoff time,
+temporal5m uses a 5 minute cutoff. In metadata we compared
+similarity between the sets of query metadata – for
+two following queries, if the intersection of their metadata
+sets was non-empty, the queries were considered part of the
+same session. Similarly enhanced metadata compares sets of
+ConceptNet enhanced metadata.
+
+To evaluate the quality of each approach, sessions were compared
+to the baseline (manually created sessions) and precision
+and recall were calculated using the following methodology:
+
+Precision indicates the internal coherence of the session.
+Queries from automatically detected session are mapped to
+
+the manually detected sessions and precision is calculated as
+the ratio of the cardinality of the best match (i.e. the most
+frequent session in the mapping) to the cardinality of the
+whole session.
+
+For example, the query log contains queries
+
+{A, B, C, D, E, F, G, H, I}
+
+The human evaluator segmented the log into two sessions:
+
+H1 : {A, B, C, G, H, I}
+H2 : {D, E, F}.
+
+The automatic method detected three sessions:
+
+A1 : {A, B, C, D}
+A2 : {E, F}
+A3 : {G, H, I}
+
+Queries from automatically detected sessions are mapped to
+their manually created sessions, yielding:
+
+A1 : {H1, H1, H1, H2}
+A2 : {H2, H2}
+A3 : {H1, H1, H1}
+
+For A1, the best match is H1, as is contains three queries
+from H1 as opposed to one query from H2. The cardinality
+of the best match is 3, cardinality of the whole session is 4,
+the precision is thus 3/4.
+
+Recall indicates the completeness of the session. It is calculated
+as the ratio of cardinality of the best match against
+the manually created sessions to the cardinality of the bestmatched
+session. In the above example for A1, the session
+H1 (best match for A1) contains 6 queries, cardinality of the
+best match is 3, the recall is thus 3/6.
+
+We see that when using the classical methods, the lexical
+approach outperforms temporal methods, with the widely
+used 30 minute cutoff yielding slightly better performance.
+Metadata based approach did not outperform temporal approaches
+and yielded low recall. This is due to the fact that
+the extracted metadata generally cover wide area of topics
+and metadata from similar pages on the same topic do not
+necessarily overlap.
+
+We expected that enhancing the metadata would improve
+performance by connecting similar words and improving the
+chance for a match, yet the performance of the enhanced
+metadata was worse than that of the metadata alone. This
+is rather surprising, but after closer inspection of the metadata
+and ConceptNet connections, we believe that this was
+caused by several factors:
 
 \begin{itemize} 
-	\item
-	\item
+	\item queries were generated by technical users who deal
+	with specific technologies and problems which include
+	vocabulary not present in the ConceptNet database –
+	the majority of metadata was thus left unexpanded;
+	\item in many cases, the ConceptNet relations are too general
+	and at very different conceptual levels (e.g. the
+	term “jaguar” is linked to term “black”) – in turn, the
+	query metadata was enhanced with many generic and
+	abstract terms, leading to a false positive matches thus
+	reducing precision and recall.
 \end{itemize}
+
+Next, we focused on evaluating the interruptions. The combined
+approach of using lexical similarity with interruption
+detection slightly outperformed lexical similarity alone. We
+tried to limit the stack traversal to sessions created in last
+0.5, 2 and 8 hours by modifying parameter Told, but this
+approach did not yield an improvement.
+
+On closer inspection of the results, we noticed that the metadata
+based approach excels at linking queries where lexical
+similarity fails (see Table 1 for examples). We combined the
+two approaches, and employed the metadata based similarity
+only when the lexical similarity did not find a match.
+This approach yielded the best score.
+
+\section{CONCLUSIONS AND FUTURE WORK}
+
+to the query – we discard badly formulated queries or misleading
+search results. Our approach is also able to detect
+and link interrupted sessions, by maintaining and searching
+a stack of past sessions.
+
+We present the results of an evaluation on the set of manually
+segmented queries. We’ve shown that considering interruptions
+can improve the performance of lexical similarity
+and that we can achieve best results when combining lexical
+similarity with metadata similarity, as this approach can
+correctly link queries, which are hard to link even for human
+evaluators, not even the lexical approach. This study
+has warranted the validity of our approach and confirmed
+that using implicit feedback, metadata and interruptions is
+a promising research area.
+
+In the next work, we will focus on building a larger dataset
+of manually segmented sessions. We plan to use the personalized
+proxy server platform to allow users themselfs to
+segment their own sessions as they search. We also plan on
+evaluating other means of enhancing the document metadata,
+e.g. by using automatically generated hypernyms.
+
+\textit Acknowledgement
+
+This work was partially supported by the grants VG1/0675/
+11/2011-2014, APVV-0208-10 and it is the partial result of
+the Research & Development Operational Programme for
+the project Research of methods for acquisition, analysis
+and personalized conveying of information and knowledge,
+ITMS 26240220039, co-funded by the ERDF.
 
 
 \bibliographystyle{abbrv}
 \bibliography{}
+[1] M. Barla. Towards social-based user modeling and
+personalization. Information Sciences and
+Technologies Bulletin of the ACM Slovakia, 3:52–60,
+2011.
+
+[2] M. Barla and M. Bielikov´a. Ordinary web pages as a
+source for metadata acquisition for open corpus user
+modeling. In Proc. of IADIS WWW/Internet 2010.,
+pages 227–233, 2010.
+
+[3] N. Buzikashvili. An exploratory web log study of
+multitasking. In Proceedings of the 29th annual
+international ACM SIGIR conference on Research and
+development in information retrieval, SIGIR ’06, pages
+623–624, New York, NY, USA, 2006. ACM.
+
+[4] L. D. Catledge and J. E. Pitkow. Characterizing
+browsing strategies in the world-wide web. Comput.
+Netw. ISDN Syst., 27:1065–1073, April 1995.
+
+[5] M. Czerwinski, E. Horvitz, and S. Wilhite. A diary
+study of task switching and interruptions. In
+Proceedings of the SIGCHI conference on Human
+factors in computing systems, CHI ’04, pages 175–182,
+New York, NY, USA, 2004. ACM.
+
+[6] M. Daoud, M. Boughanem, and L. Tamine-Lechani.
+Detecting session boundaries to personalize search
+using a conceptual user context. In S.-I. Ao and
+L. Gelman, editors, Advances in Electrical Engineering
+and Computational Science, volume 39 of Lecture
+Notes in Electrical Engineering, pages 471–482.
+Springer Netherlands, 2009.
+
+[7] P. Dourish. What we talk about when we talk about
+context. Personal and Ubiquitous Computing, 8:19–30,
+February 2004.
+
+[8] D. Downey, S. Dumais, and H. E. Models of searching
+and browsing: languages, studies and applications. In
+In Proc. IJCAI, pages 1465–1472, 2007.
+
+[9] D. Downey, S. Dumais, D. Liebling, and E. Horvitz.
+Understanding the relationship between searchers’
+queries and information goals. In Proc. of the 17th
+ACM conference on Information and knowledge
+management, CIKM ’08, pages 449–458, New York,
+NY, USA, 2008. ACM.
+
+[10] X. Fu. Towards a model of implicit feedback for web
+search. J. Am. Soc. Inf. Sci. Technol., 61:30–49,
+January 2010.
+
+[11] D. Gayo-Avello. A survey on session detection
+methods in query logs and a proposal for future
+evaluation. Inf. Sci., 179:1822–1843, May 2009.
+
+[12] C. Havasi, R. Speer, and J. Alonso. ConceptNet 3: a
+Flexible, Multilingual Semantic Network for Common
+Sense Knowledge. In Recent Advances in Natural
+Language Processing, Borovets, Bulgaria, 2007.
+
+[13] D. He and A. GA˝uker. Detecting session boundaries ˜
+from web user logs. In Proceedings of the BCSIRSG
+22nd annual colloquium on information retrieval
+research, pages 57–66, 2000.
+
+[14] E. Herder. Forward, back and home again. Analyzing
+user behavior on the Web. (phd) dissertation,
+University of Twente, 2006.
+
+[15] J. Huang and R. W. White. Parallel browsing
+behavior on the web. In Proc. of the 21st ACM conf.
+on Hypertext and hypermedia, HT ’10, pages 13–18,
+New York, NY, USA, 2010. ACM.
+
+[16] B. J. Jansen, A. Spink, C. Blakely, and S. Koshman.
+Defining a session on web search engines: Research
+articles. J. Am. Soc. Inf. Sci. Technol., 58:862–871,
+April 2007.
+
+[17] B. J. Jansen, A. Spink, and T. Saracevic. Real life,
+real users, and real needs: a study and analysis of user
+queries on the web. Inf. Process. Manage., 36:207–227,
+January 2000.
+
+[18] R. Jones and K. L. Klinkner. Beyond the session
+timeout: automatic hierarchical segmentation of
+search topics in query logs. In Proceeding of the 17th
+ACM conference on Information and knowledge
+management, CIKM ’08, pages 699–708, New York,
+NY, USA, 2008. ACM.
+
+[19] M. T. Keane, M. O’Brien, and B. Smyth. Are people
+biased in their use of search engines? Commun. ACM,
+51:49–52, February 2008.
+
+[20] T. Kram´ar, M. Barla, and M. Bielikov´a. Peweproxy:
+A platform for ubiquitous personalization of the “wild”
+web. In UMAP ’11: Adjunct Proc. of the 19th Int.
+Conf. on User Modeling, Adaptation, and
+
+Personalization, pages 7–9, Girona, Spain, 2011.
+[21] S. Lawrence. Context in web search. IEEE Data
+Engineering Bulletin, 23(3):25–32, 2000.
+
+[22] C. Lucchese, S. Orlando, R. Perego, F. Silvestri, and
+G. Tolomei. Identifying task-based sessions in search
+engine query logs. In Proceedings of the fourth ACM
+international conference on Web search and data
+mining, WSDM ’11, pages 277–286, New York, NY,
+USA, 2011. ACM.
+
+[23] C. G. Murray, J. Lin, and A. Chowdhury.
+Identification of user sessions with hierarchical
+agglomerative clustering. Proceedings of the American
+Society for Information Science and Technology,
+43(1):1–5, 2006.
+
+[24] F. Radlinski and T. Joachims. Query chains: learning
+to rank from implicit feedback. In Proceedings of the
+eleventh ACM SIGKDD international conference on
+Knowledge discovery in data mining, KDD ’05, pages
+239–248, New York, NY, USA, 2005. ACM.
+
+[25] X. Shen, B. Tan, and C. Zhai. Implicit user modeling
+for personalized search. In Proceedings of the 14th
+ACM international conference on Information and
+knowledge management, CIKM ’05, pages 824–831,
+New York, NY, USA, 2005. ACM.
+
+[26] A. Veilumuthu and P. Ramachandran. Discovering
+implicit feedbacks from search engine log files. In
+Proceedings of the 10th international conference on
+Discovery science, DS’07, pages 231–242, Berlin,
+Heidelberg, 2007. Springer-Verlag.
+
+[27] R. White and J. Huang. Assessing the scenic route:
+measuring the value of search trails in web logs. In
+Proceeding of the 33rd international ACM SIGIR
+conference on Research and development in
+information retrieval, pages 587–594. ACM, 2010.
+
+[28] J. Yan, Z. Zheng, L. Jiang, Y. Li, S. Yan, and
+Z. Chen. A co-learning framework for learning user
+search intents from rule-generated training data. In
+Proceeding of the 33rd international ACM SIGIR
+conference on Research and development in
+information retrieval, SIGIR ’10, pages 895–896, New
+York, NY, USA, 2010. ACM.
+
+
 
 \balancecolumns
 
