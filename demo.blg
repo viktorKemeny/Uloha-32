@@ -1,10 +1,18 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: demo.aux
 The style file: abbrv.bst
-I couldn't open database file .bib
----line 11 of file demo.aux
- : \bibdata{
- :          }
-I'm skipping whatever remains of this command
-I found no \citation commands---while reading file demo.aux
-I found no database files---while reading file demo.aux
-(There were 3 error messages)
+Database file #1: literatura.bib
+Name 1 in "D. Downey, S. Dumais, D. Liebling, and E. Horvitz" has a comma at the end for entry Downey:1
+while executing---line 1049 of file abbrv.bst
+Name 1 in "M. Daoud, M. Boughanem, and L. Tamine-Lechani" has a comma at the end for entry Daoud:1
+while executing---line 1049 of file abbrv.bst
+Warning--there's a number but no volume in Barla:1
+Warning--there's a number but no volume in Buzikashvili:1
+Warning--there's a number but no volume in Catledge:1
+Name 1 in "D. Downey, S. Dumais, D. Liebling, and E. Horvitz" has a comma at the end for entry Downey:1
+while executing---line 1090 of file abbrv.bst
+Warning--there's a number but no volume in Downey:1
+Warning--there's a number but no volume in Dourish
+Warning--there's a number but no volume in XFu:1
+Name 1 in "M. Daoud, M. Boughanem, and L. Tamine-Lechani" has a comma at the end for entry Daoud:1
+while executing---line 1090 of file abbrv.bst
+(There were 4 error messages)

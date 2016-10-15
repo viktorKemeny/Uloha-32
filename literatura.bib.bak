@@ -48,68 +48,62 @@
 	howpublished = "\url{http://www.sei.cmu.edu/productlines/frame_report/}",
 }
 
-@Article{Barla:1,
+@Article{3:52–60,
   author  = {M. Barla},
   title   = {Towards social-based user modeling and personalization},
   journal = {Information Sciences and Technologies Bulletin of the ACM},
   year    = {2011},
-  number  = {3:52–60},
 }
 
-@Article{Barla:2,
+@Article{,
   author  = {M. Barla and M. Bielikova},
   title   = {Ordinary web pages as a source for metadata acquisition for open corpus user modeling},
   journal = {In Proc. of IADIS WWW/Internet 2010},
   year    = {pages 227–233, 2010},
 }
 
-@Article{Buzikashvili:1,
+@Article{623–624,
   author  = {N. Buzikashvili},
   title   = {An exploratory web log study of multitasking},
   journal = {In Proceedings of the 29th annual international ACM SIGIR conference on Research and development in information retrieval, SIGIR},
   year    = {2006},
-  number  = {623–624},
 }
 
-@Article{Catledge:1,
+@Article{27:1065–1073,
   author  = {L. D. Catledge and J. E. Pitkow},
   title   = {Characterizing browsing strategies in the world-wide web},
   journal = {Comput. Netw. ISDN Syst.},
   year    = {1995},
-  number  = {27:1065–1073},
   month   = apr,
 }
 
-@Article{Czerwinski:1,
+@Article{175-182,
   author  = {M. Czerwinski, E. Horvitz, S. Wilhite},
   title   = {A diary study of task switching and interruptions},
   journal = {In Proceedings of the SIGCHI conference on Human factors in computing systems},
   year    = {2004},
-  number  = {175-182},
   pages   = {4},
   note    = {New York, NY, USA},
 }
 
-@Article{Daoud:1,
+@Article{471-482,
   author  = {M. Daoud, M. Boughanem, and L. Tamine-Lechani},
   title   = {Detecting session boundaries to personalize search using a conceptual user context},
   journal = {In S.-I. Ao and L. Gelman, editors, Advances in Electrical Engineering and Computational Science},
   year    = {2009},
   volume  = {39 of Lecture Notes in Electrical Engineering, pages},
-  number  = {471-482},
   note    = {Springer Netherlands},
 }
 
-@Article{Dourish,
+@Article{8:19-30,
   author  = {P. Dourish},
   title   = {What we talk about when we talk about context},
   journal = {Personal and Ubiquitous Computing},
   year    = {2004},
-  number  = {8:19-30},
   month   = feb,
 }
 
-@Article{Downey:2,
+@Article{,
   author  = {D. Downey, S. Dumais, H. E.},
   title   = {Models of searching and browsing: languages, studies and applications},
   journal = {In In Proc. IJCAI},
@@ -117,22 +111,20 @@
   pages   = {1465-1472},
 }
 
-@Article{Downey:1,
+@Article{449-458,
   author  = {D. Downey, S. Dumais, D. Liebling, and E. Horvitz},
   title   = {Understanding the relationship between searchers’ queries and information goals},
   journal = {In Proc. of the 17th ACM conference on Information and knowledge management, CIKM ’08},
   year    = {2008},
-  number  = {449-458},
   pages   = {449-458},
   note    = {New York, NY, USA, 2008. ACM},
 }
 
-@Article{XFu:1,
+@Article{61:30-49,
   author  = {X. Fu},
   title   = {Towards a model of implicit feedback for web search},
   journal = {J. Am. Soc. Inf. Sci. Technol},
   year    = {2010},
-  number  = {61:30-49},
   month   = jan,
 }
 

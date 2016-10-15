@@ -1,3 +1,65 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{10}
+
+\bibitem{Barla:1}
+M.~Barla.
+\newblock Towards social-based user modeling and personalization.
+\newblock {\em Information Sciences and Technologies Bulletin of the ACM},
+  (3:52–60), 2011.
+
+\bibitem{Barla:2}
+M.~Barla and M.~Bielikova.
+\newblock Ordinary web pages as a source for metadata acquisition for open
+  corpus user modeling.
+\newblock {\em In Proc. of IADIS WWW/Internet 2010}, pages 227–233, 2010.
+
+\bibitem{Buzikashvili:1}
+N.~Buzikashvili.
+\newblock An exploratory web log study of multitasking.
+\newblock {\em In Proceedings of the 29th annual international ACM SIGIR
+  conference on Research and development in information retrieval, SIGIR},
+  (623–624), 2006.
+
+\bibitem{Catledge:1}
+L.~D. Catledge and J.~E. Pitkow.
+\newblock Characterizing browsing strategies in the world-wide web.
+\newblock {\em Comput. Netw. ISDN Syst.}, (27:1065–1073), Apr. 1995.
+
+\bibitem{Coplien:MPD}
+J.~O. Coplien.
+\newblock {\em Multi-Paradigm Design for C++}.
+\newblock Addison-Wesley, 1999.
+
+\bibitem{Downey:1}
+D.~L. D.~Downey, S.~Dumais and E.~Horvitz.
+\newblock Understanding the relationship between searchers’ queries and
+  information goals.
+\newblock {\em In Proc. of the 17th ACM conference on Information and knowledge
+  management, CIKM ’08}, (449-458):449--458, 2008.
+\newblock New York, NY, USA, 2008. ACM.
+
+\bibitem{Downey:2}
+H.~E. D.~Downey, S.~Dumais.
+\newblock Models of searching and browsing: languages, studies and
+  applications.
+\newblock {\em In In Proc. IJCAI}, pages 1465--1472, 2007.
+
+\bibitem{Dourish}
+P.~Dourish.
+\newblock What we talk about when we talk about context.
+\newblock {\em Personal and Ubiquitous Computing}, (8:19-30), Feb. 2004.
+
+\bibitem{XFu:1}
+X.~Fu.
+\newblock Towards a model of implicit feedback for web search.
+\newblock {\em J. Am. Soc. Inf. Sci. Technol}, (61:30-49), Jan. 2010.
+
+\bibitem{Daoud:1}
+M.~B. M.~Daoud and L.~Tamine-Lechani.
+\newblock Detecting session boundaries to personalize search using a conceptual
+  user context.
+\newblock {\em In S.-I. Ao and L. Gelman, editors, Advances in Electrical
+  Engineering and Computational Science}, 39 of Lecture Notes in Electrical
+  Engineering, pages(471-482), 2009.
+\newblock Springer Netherlands.
 
 \end{thebibliography}
